@@ -1,0 +1,3 @@
+C:/Users/matan/CLionProjects/Matrix-part2/cmake-build-debug/CMakeFiles/Matrix_part2.dir
+C:/Users/matan/CLionProjects/Matrix-part2/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/matan/CLionProjects/Matrix-part2/cmake-build-debug/CMakeFiles/rebuild_cache.dir
