@@ -27,22 +27,23 @@ namespace zich
         void setNumberOfColumns(const int num);
         void setValues(const vector<double>& values);
         static void check_same_size(const Matrix& matrix1, const Matrix& matrix2); // help func
+        static void check_matrix(const Matrix& matrix);
         // arithmetic operations
         Matrix operator+ (const Matrix& matrix);
-        void operator+= (const Matrix& matrix);
+        Matrix& operator+= (const Matrix& matrix);
         Matrix operator- (const Matrix& matrix);
-        void operator-= (const Matrix& matrix);
+        Matrix& operator-= (const Matrix& matrix);
         Matrix operator+ ();
         Matrix operator- ();
-        Matrix operator++ ();// prefix
+        Matrix& operator++ ();// prefix
         Matrix operator++ (int); // postfix
-        Matrix operator-- (); // prefix
+        Matrix& operator-- (); // prefix
         Matrix operator-- (int); // postfix
         friend Matrix operator* (const double num, Matrix matrix);
         Matrix operator* (const double num);
-        void operator*= (const double num);
+        Matrix& operator*= (const double num);
         Matrix operator* (const Matrix& matrix);
-        void operator*= (const Matrix& matrix);
+        Matrix& operator*= (const Matrix& matrix);
         static void check_sum(const Matrix& matrix1,const Matrix& matrix2, double *sum1, double *sum2); // help func
         // comparison operations
         bool operator> (const Matrix& matrix) const;

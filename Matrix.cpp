@@ -16,6 +16,7 @@ Matrix::Matrix(vector<double> values, int num_of_rows, int num_of_columns)
     this->values = move(values);
     this->num_of_rows = num_of_rows;
     this->num_of_columns = num_of_columns;
+    check_matrix(*this);
 }
 Matrix::Matrix(const Matrix& matrix) // copy constructor
 {
@@ -40,15 +41,35 @@ vector<double> Matrix::getValues() const
 // setters
 void Matrix::setNumberOfRows(const int num)
 {
+    if (num == 0)
+    {
+        throw invalid_argument("Matrix dimension can't be zero");
+    }
     this->num_of_rows = num;
+    if (!this->values.empty() && this->num_of_columns != 0)
+    {
+        check_matrix(*this);
+    }
 }
 void Matrix::setNumberOfColumns(const int num)
 {
+    if (num == 0)
+    {
+        throw invalid_argument("Matrix dimension can't be zero");
+    }
     this->num_of_columns = num;
+    if (!this->values.empty() && this->num_of_rows != 0)
+    {
+        check_matrix(*this);
+    }
 }
 void Matrix::setValues(const vector<double>& values)
 {
     this->values = values;
+    if (this->num_of_rows != 0 && this->num_of_columns != 0)
+    {
+        check_matrix(*this);
+    }
 }
 /**
  * This function check if the values dimensions of the matrices are equal.
@@ -58,6 +79,16 @@ void Matrix::check_same_size(const Matrix& matrix1, const Matrix& matrix2)
     if (matrix1.num_of_rows != matrix2.num_of_rows || matrix1.num_of_columns != matrix2.num_of_columns)
     {
         throw invalid_argument("Matrices sized must be equal!");
+    }
+}
+/**
+ * The function check if the row and column of the matrix make sense.
+ */
+void Matrix::check_matrix(const Matrix& matrix)
+{
+    if (int(matrix.values.size()) % matrix.num_of_rows != 0 || int(matrix.values.size()) % matrix.num_of_columns != 0)
+    {
+        throw invalid_argument("Matrices size doesn't make sense!");
     }
 }
 // arithmetic operations
@@ -79,9 +110,10 @@ Matrix Matrix::operator+ (Matrix const & matrix)
  * This function adding the right matrix values to the left one.
  * This function overloading the += operator.
  */
-void Matrix::operator+= (const Matrix& matrix)
+Matrix& Matrix::operator+= (const Matrix& matrix)
 {
     *this = *this + matrix;
+    return *this;
 }
 /**
  * This function subtract two matrices and return a new matrix based on their subtraction.
@@ -101,9 +133,10 @@ Matrix Matrix::operator- (const Matrix& matrix)
  * This function subtract right matrix from the left one.
  * This function overloading the -= operator.
  */
-void Matrix::operator-= (const Matrix& matrix)
+Matrix& Matrix::operator-= (const Matrix& matrix)
 {
     *this = *this - matrix;
+    return *this;
 }
 /**
  * This function returns a deep copy of the matrix.
@@ -127,7 +160,7 @@ Matrix Matrix::operator- ()
  * This function adding 1 to each cell in the matrix and returns the updated matrix.
  * This function overloading the ++ prefix operator.
  */
-Matrix Matrix::operator++ ()
+Matrix& Matrix::operator++ ()
 {
     for (unsigned int i = 0; i < this->values.size(); ++i) {
         this->values.at(i)++;
@@ -148,7 +181,7 @@ Matrix Matrix::operator++ (int)
  * This function subtracting 1 from each cell in the matrix and returns the updated matrix.
  * This function overloading the -- prefix operator.
  */
-Matrix Matrix::operator-- ()
+Matrix& Matrix::operator-- ()
 {
     for (unsigned int i = 0; i < this->values.size(); ++i) {
         this->values.at(i)--;
@@ -187,11 +220,12 @@ Matrix Matrix::operator* (const double num)
  * This function multiplying each matrix cell in the number and updating the matrix by that multiplication.
  * This function overloading the matrix *= num operator.
  */
-void Matrix::operator*= (const double num)
+Matrix& Matrix::operator*= (const double num)
 {
     for (unsigned int i = 0; i < this->values.size(); ++i) {
         this->values.at(i) *= num;
     }
+    return  *this;
 }
 /**
  * This function performs a matrix multiplication and returns a new matrix based on that multiplication.
@@ -207,7 +241,7 @@ Matrix Matrix::operator* (const Matrix& matrix)
  * This function performs a matrix multiplication and updating the left matrix based on that multiplication.
  * This function overloading the matrix *= matrix operator.
  */
-void Matrix::operator*= (const Matrix& matrix)
+Matrix& Matrix::operator*= (const Matrix& matrix)
 {
     if (this->num_of_columns != matrix.num_of_rows)
     {
@@ -225,6 +259,7 @@ void Matrix::operator*= (const Matrix& matrix)
     }
     this->values = output_vector;
     this->num_of_columns = matrix.num_of_columns;
+    return *this;
 }
 // comparison operations
 /**
