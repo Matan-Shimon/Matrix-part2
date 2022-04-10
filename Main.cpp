@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Matrix.hpp"
+#include "sources/Matrix.hpp"
 
 using namespace std;
 using namespace zich;
@@ -20,34 +20,16 @@ int main() {
     double num;
     if (choice1 == 1)
     {
-        int num_of_rows = 0;
-        while (num_of_rows <= 0)
-        {
-            cout << "Enter number of rows (must be positive): ";
-            cin >> num_of_rows;
-        }
-        int num_of_columns = 0;
-        while (num_of_columns <= 0)
-        {
-            cout << "Enter number of columns (must be positive): ";
-            cin >> num_of_columns;
-        }
-        vector<double> matrix_vector;
-        for (int i = 0; i < num_of_rows*num_of_columns; ++i) {
-            double value;
-            cout << "Enter value: ";
-            cin >> value;
-            matrix_vector.push_back(value);
-        }
-        matrix1.setNumberOfRows(num_of_rows);
-        matrix1.setNumberOfColumns(num_of_columns);
-        matrix1.setValues(matrix_vector);
+        cout << "Enter matrix in the formula of: (x x, x x, )" << endl;
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        cin >> matrix1;
     }
     else
     {
         cout << "Enter floating point number: ";
         cin >> num;
     }
+
     int action = 1;
     if (choice1 == 1)
     {
@@ -110,28 +92,9 @@ int main() {
         }
         if (choice2 == 1)
         {
-            int num_of_rows = 0;
-            while (num_of_rows <= 0)
-            {
-                cout << "Enter number of rows for matrix (must be positive): ";
-                cin >> num_of_rows;
-            }
-            int num_of_columns = 0;
-            while (num_of_columns <= 0)
-            {
-                cout << "Enter number of columns for matrix (must be positive): ";
-                cin >> num_of_columns;
-            }
-            vector<double> matrix_vector;
-            for (int i = 0; i < num_of_rows*num_of_columns; ++i) {
-                double value;
-                cout << "Enter value: ";
-                cin >> value;
-                matrix_vector.push_back(value);
-            }
-            matrix2.setNumberOfRows(num_of_rows);
-            matrix2.setNumberOfColumns(num_of_columns);
-            matrix2.setValues(matrix_vector);
+            cout << "Enter matrix in the formula of: (x x, x x, )" << endl;
+            cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            cin >> matrix2;
         }
         else
         {
@@ -185,7 +148,7 @@ int main() {
         }
         else
         {
-            if (arithmetic_action == 1)
+            if (arithmetic_action == 3)
             {
                 final_matrix = matrix1 * num;
             }
@@ -232,6 +195,14 @@ int main() {
         cout << "Matrix 2:" << endl;
         cout << matrix2 << endl;
         cout << "comparison value: ";
-        cout << logistic_ans << endl;
+        if (logistic_ans == 0)
+        {
+            cout << "false" << endl;
+        }
+        else
+        {
+            cout << "true" << endl;
+        }
     }
+    cout << "Thanks for using my Matrix calculator!" << endl;
 }

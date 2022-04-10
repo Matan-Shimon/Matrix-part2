@@ -86,7 +86,7 @@ void Matrix::check_same_size(const Matrix& matrix1, const Matrix& matrix2)
  */
 void Matrix::check_matrix(const Matrix& matrix)
 {
-    if (int(matrix.values.size()) % matrix.num_of_rows != 0 || int(matrix.values.size()) % matrix.num_of_columns != 0)
+    if (int(matrix.values.size()) != matrix.num_of_rows * matrix.num_of_columns)
     {
         throw invalid_argument("Matrices size doesn't make sense!");
     }
@@ -222,7 +222,7 @@ Matrix Matrix::operator* (const double num)
  */
 Matrix& Matrix::operator*= (const double num)
 {
-    for (unsigned int i = 0; i < this->values.size(); ++i) {
+    for (unsigned int i = 0; i < this->getValues().size(); ++i) {
         this->values.at(i) *= num;
     }
     return  *this;
@@ -395,56 +395,47 @@ ostream& zich::operator<< (ostream& output, const Matrix& matrix)
 /**
  * This function overloading the input (>>) operator.
  */
-istream& zich::operator>> (istream& input , Matrix& matrix)
-{
-    string given_string;
-    char ch = 'a';
-    while (ch != '\n')
-    {
-        ch = input.get();
-        given_string += ch;
-    }
-    given_string.pop_back();
-    string value_str;
-    vector<double> values;
-    int num_of_rows = 1;
-    int num_of_columns = 1;
-    bool first_row = true;
-    for (unsigned int i = 0; i < given_string.size(); ++i) {
-        ch = given_string.at(i);
-        if (ch != ' ')
-        {
-            if (ch == ',')
-            {
-                double value = stod(value_str);
-                values.push_back(value);
-                num_of_rows++;
-                if (!first_row)
-                {
-                    if (num_of_columns != matrix.num_of_columns)
-                    {
-                        throw invalid_argument("The string you have provided does not have the same number of columns in each row");
-                    }
-                }
-                first_row = false;
-                matrix.num_of_columns = num_of_columns;
-                num_of_columns = 1;
-            }
-            else
-            {
-                value_str += ch;
-            }
+istream& zich::operator >>(istream& in,Matrix &mat) {
+    vector<double> vec;
+    int row = 0;
+    int rowLenght = 1;
+    int counter = 1;
+    char last = ' ';
+    char beforeLast = ',';
+    double number = 0;
+    bool first = false;
+    string tempNum;
+    char temp = in.get();
+    while (temp != '\n') {
+        if (temp == ' ') {
+            number = stod(tempNum);
+            vec.push_back(number);
+            tempNum = "";
+            counter++;
         }
-        else
-        {
-            num_of_columns++;
-            double value = stod(value_str);
-            value_str = "";
-            values.push_back(value);
-            num_of_columns++;
+        if (temp == ',') {
+            row++;
+            if (first && rowLenght != counter) {
+                throw invalid_argument("wrong input for matrix");
+            }
+            if (!first) {
+                rowLenght = counter;
+                first = true;
+            }
+            counter = 0;
+
         }
+        tempNum += temp;
+        beforeLast = last;
+        last = temp;
+        temp = in.get();
+
     }
-    matrix.num_of_rows = num_of_rows;
-    matrix.values = values;
-    return input;
+    if (last != ' ' && beforeLast != ',') {
+        throw invalid_argument("wrong input for matrix");
+    }
+    mat.num_of_columns=rowLenght;
+    mat.num_of_rows = row;
+    mat.values = vec;
+    return in;
 }
