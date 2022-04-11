@@ -41,9 +41,9 @@ vector<double> Matrix::getValues() const
 // setters
 void Matrix::setNumberOfRows(const int num)
 {
-    if (num == 0)
+    if (num <= 0)
     {
-        throw invalid_argument("Matrix dimension can't be zero");
+        throw invalid_argument("Matrix dimension need to be positive");
     }
     this->num_of_rows = num;
     if (!this->values.empty() && this->num_of_columns != 0)
@@ -53,9 +53,9 @@ void Matrix::setNumberOfRows(const int num)
 }
 void Matrix::setNumberOfColumns(const int num)
 {
-    if (num == 0)
+    if (num <= 0)
     {
-        throw invalid_argument("Matrix dimension can't be zero");
+        throw invalid_argument("Matrix dimension need to be positive");
     }
     this->num_of_columns = num;
     if (!this->values.empty() && this->num_of_rows != 0)
@@ -66,7 +66,7 @@ void Matrix::setNumberOfColumns(const int num)
 void Matrix::setValues(const vector<double>& values)
 {
     this->values = values;
-    if (this->num_of_rows != 0 && this->num_of_columns != 0)
+    if (this->num_of_rows > 0 && this->num_of_columns > 0)
     {
         check_matrix(*this);
     }
@@ -86,7 +86,7 @@ void Matrix::check_same_size(const Matrix& matrix1, const Matrix& matrix2)
  */
 void Matrix::check_matrix(const Matrix& matrix)
 {
-    if (int(matrix.values.size()) != matrix.num_of_rows * matrix.num_of_columns)
+    if (int(matrix.values.size()) != matrix.num_of_rows * matrix.num_of_columns || matrix.num_of_rows <= 0 || matrix.num_of_columns <= 0)
     {
         throw invalid_argument("Matrices size doesn't make sense!");
     }
@@ -248,14 +248,15 @@ Matrix& Matrix::operator*= (const Matrix& matrix)
         throw invalid_argument("the left matrix number of columns must be equal to the right matrix number of rows");
     }
     vector<double> output_vector;
-    for (unsigned int i = 0; i < this->num_of_rows; ++i) {
-        for (unsigned int j = 0; j < this->num_of_rows; ++j) {
-            double new_value = 0;
-            for (unsigned int k = 0; k < matrix.num_of_rows; ++k) {
-                new_value += this->values.at(i*unsigned(this->num_of_columns) + k) * matrix.values.at(k*unsigned(matrix.num_of_columns) + j);
+    for (unsigned int i = 0; i < this->num_of_rows; i++) {
+        for (unsigned int j = 0; j < matrix.num_of_columns; j++) {
+            double value = 0;
+            for (size_t k = 0; k < this->num_of_columns ; k++) {
+                value+= this->values.at(i*unsigned(this->num_of_columns)+k)*matrix.values.at(k*unsigned(matrix.num_of_columns)+j);
             }
-            output_vector.push_back(new_value);
+            output_vector.push_back(value);
         }
+
     }
     this->values = output_vector;
     this->num_of_columns = matrix.num_of_columns;
@@ -342,12 +343,12 @@ bool Matrix::operator<= (const Matrix& matrix) const
  * This function check if the there's a cell that is not equal to the same cell in the other matrix.
  * This function overloading the unequal (==) operator.
  */
-bool Matrix::operator!= (const Matrix& matrix)
+bool zich::operator!= (Matrix const & matrix1,Matrix const & matrix2)
 {
-    check_same_size(*this, matrix);
+    Matrix::check_same_size(matrix1, matrix2);
     bool ans = false;
-    for (unsigned int i = 0; i < this->values.size(); ++i) {
-        if (this->values.at(i) != matrix.values.at(i))
+    for (unsigned int i = 0; i < matrix1.values.size(); ++i) {
+        if (matrix1.values.at(i) != matrix2.values.at(i))
         {
             ans = true;
         }
@@ -358,9 +359,9 @@ bool Matrix::operator!= (const Matrix& matrix)
  * This function checks if each cell is equal to the other matrix cell.
  * This function overloading the equalization (==) operator.
  */
-bool Matrix::operator== (const Matrix& matrix)
+bool zich::operator== (Matrix const & matrix1,Matrix const & matrix2)
 {
-    return !(*this != matrix);
+    return !(matrix1 != matrix2);
 }
 /**
  * This function overloading the output (<<) operator.
@@ -395,47 +396,42 @@ ostream& zich::operator<< (ostream& output, const Matrix& matrix)
 /**
  * This function overloading the input (>>) operator.
  */
-istream& zich::operator >>(istream& in,Matrix &mat) {
-    vector<double> vec;
-    int row = 0;
-    int rowLenght = 1;
+istream& zich::operator >>(istream& in,Matrix &matrix) {
+    vector<double> output_vector;
+    int row=0;
+    int row_len = 1;
     int counter = 1;
-    char last = ' ';
-    char beforeLast = ',';
-    double number = 0;
+    double value = 0;
     bool first = false;
-    string tempNum;
-    char temp = in.get();
-    while (temp != '\n') {
-        if (temp == ' ') {
-            number = stod(tempNum);
-            vec.push_back(number);
-            tempNum = "";
+    string str_value;
+    char ch = in.get();
+    while(ch!='\n'){
+        if(ch==' '){
+            value= stod(str_value);
+            output_vector.push_back(value);
+            str_value="";
             counter++;
         }
-        if (temp == ',') {
+        if(ch==','){
             row++;
-            if (first && rowLenght != counter) {
+            if(first&&row_len!=counter){
                 throw invalid_argument("wrong input for matrix");
             }
-            if (!first) {
-                rowLenght = counter;
-                first = true;
+            if(!first) {
+                row_len = counter;
+                first= true;
             }
-            counter = 0;
+            counter=0;
 
         }
-        tempNum += temp;
-        beforeLast = last;
-        last = temp;
-        temp = in.get();
+        if(ch!='['&&ch!=']') {
+            str_value += ch;
+        }
+        ch = in.get();
 
     }
-    if (last != ' ' && beforeLast != ',') {
-        throw invalid_argument("wrong input for matrix");
-    }
-    mat.num_of_columns=rowLenght;
-    mat.num_of_rows = row;
-    mat.values = vec;
+    matrix.num_of_columns=row_len;
+    matrix.num_of_rows= row;
+    matrix.values = output_vector;
     return in;
 }

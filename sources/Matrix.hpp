@@ -50,8 +50,8 @@ namespace zich
         bool operator>= (const Matrix& matrix) const;
         bool operator< (const Matrix& matrix) const;
         bool operator<= (const Matrix& matrix) const;
-        bool operator!= (const Matrix& matrix);
-        bool operator== (const Matrix & matrix);
+        friend bool operator!= (Matrix const & matrix1,Matrix const & matrix2);
+        friend bool operator== (Matrix const & matrix1, Matrix const & matrix2);
         friend ostream & operator<< (ostream& output, const Matrix& matrix); // output (cout)
         friend istream & operator>> (istream& input , Matrix& matrix); // input (cin)
     };
