@@ -415,13 +415,13 @@ istream& zich::operator >>(istream& in,Matrix &matrix) {
         if (ch==']') {
             value= stod(str_value);
             output_vector.push_back(value);
-            if(first == false &&row_len != counter){
+            if(!first &&row_len != counter){
                 throw invalid_argument("row length must be equal!");
             }
         }
         if(ch==','){
             num_of_rows++;
-            if(first == false &&row_len != counter){
+            if(!first &&row_len != counter){
                 throw invalid_argument("row length must be equal!");
             }
             if(first) {
