@@ -398,11 +398,11 @@ ostream& zich::operator<< (ostream& output, const Matrix& matrix)
  */
 istream& zich::operator >>(istream& in,Matrix &matrix) {
     vector<double> output_vector;
-    int row=0;
+    int num_of_rows = 1;
     int row_len = 1;
     int counter = 1;
     double value = 0;
-    bool first = false;
+    bool first = true;
     string str_value;
     char ch = in.get();
     while(ch!='\n'){
@@ -412,26 +412,31 @@ istream& zich::operator >>(istream& in,Matrix &matrix) {
             str_value="";
             counter++;
         }
+        if (ch==']') {
+            value= stod(str_value);
+            output_vector.push_back(value);
+            if(first == false &&row_len != counter){
+                throw invalid_argument("row length must be equal!");
+            }
+        }
         if(ch==','){
-            row++;
-            if(first&&row_len!=counter){
-                throw invalid_argument("wrong input for matrix");
+            num_of_rows++;
+            if(first == false &&row_len != counter){
+                throw invalid_argument("row length must be equal!");
             }
-            if(!first) {
+            if(first) {
                 row_len = counter;
-                first= true;
+                first = false;
             }
-            counter=0;
-
+            counter = 0;
         }
         if(ch!='['&&ch!=']') {
             str_value += ch;
         }
         ch = in.get();
-
     }
     matrix.num_of_columns=row_len;
-    matrix.num_of_rows= row;
+    matrix.num_of_rows= num_of_rows;
     matrix.values = output_vector;
     return in;
 }
